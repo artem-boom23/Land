@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
+  <g fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <!-- квадрат-участок -->
+    <rect x="8" y="8" width="80" height="80" rx="14"></rect>
+    <!-- L -->
+    <path d="M28 24v48h24"></path>
+    <!-- M -->
+    <path d="M44 72V42l12 12 12-12v30"></path>
+  </g>
+</svg>

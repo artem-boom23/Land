@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
+import PropertyForm from "../components/PropertyForm";
 
 const properties = [
   {
@@ -104,7 +105,7 @@ export default function PropertyPage() {
 
       {/* Характеристики */}
       <h2 className="text-2xl font-bold mb-6">Характеристики участка</h2>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto mb-12">
         <table className="w-full border-collapse rounded-xl overflow-hidden shadow-lg">
           <tbody>
             {Object.entries(property.features).map(([key, value], i) => (
@@ -118,6 +119,9 @@ export default function PropertyPage() {
           </tbody>
         </table>
       </div>
+
+      {/* Форма заявки */}
+      <PropertyForm plotId={property.id} />
     </div>
   );
 }

@@ -3,16 +3,25 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+  "dev": "vite",
+  "build": "vite build",
+  "start": "node server/server.js",
+  "prod": "npm run build && pm2 restart stolitsa || pm2 start server/server.js --name stolitsa"
   },
   "dependencies": {
+    "@fontsource/inter": "^5.2.8",
+    "@react-google-maps/api": "^2.20.7",
     "framer-motion": "^11.0.0",
+    "leaflet": "^1.9.4",
     "lucide-react": "^0.454.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^7.9.1"
+    "react-helmet-async": "^2.0.5",
+    "react-icons": "^5.5.0",
+    "react-input-mask": "^3.0.0-alpha.2",
+    "react-leaflet": "^4.2.1",
+    "react-router-dom": "^7.9.1",
+    "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.2.1",
