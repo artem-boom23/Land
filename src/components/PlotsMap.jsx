@@ -20,7 +20,7 @@ function loadYmapsOnce() {
   const s = document.createElement("script");
   s.id = "ymaps-script";
   s.async = true;
-  s.src = "https://api-maps.yandex.ru/2.1/?lang=ru_RU";
+  s.src = "https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=a94936f6-59b6-4904-95c2-0704064256ae";
   document.head.appendChild(s);
 
   return new Promise((resolve) => {
