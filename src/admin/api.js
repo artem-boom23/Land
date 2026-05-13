@@ -1,6 +1,6 @@
 // src/admin/api.js
 
-const API_URL = (import.meta?.env?.VITE_API_URL || "").replace(/\/+$/,"");
+const API_URL = (import.meta.env.VITE_API_URL || "").replace(/\/+$/,"");
 
 /** токен в localStorage (Bare и Raw совместимы с твоим PrivateRoute) */
 export function setToken(token) {
