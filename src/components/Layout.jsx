@@ -5,6 +5,10 @@ import ScrollToTop from "./ScrollToTop";
 import CookieConsent from "./CookieConsent";
 import { useLocation } from "react-router-dom";
 
+if (typeof window !== "undefined") {
+  window.history.scrollRestoration = "manual";
+}
+
 export default function Layout({ children }) {
   const { pathname } = useLocation();
   const isHome = pathname === "/";
