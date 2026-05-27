@@ -63,29 +63,29 @@ export async function fetchPublicPlots(category) {
 export const AdminAPI = {
   // участки
   getPlots(category) {
-    return authedFetch(`/admin-plots?category=${encodeURIComponent(category)}`, { method: "GET" });
+    return authedFetch(`/admin/plots?category=${encodeURIComponent(category)}`, { method: "GET" });
   },
   addPlot(payload, category) {
-    return authedFetch(`/admin-plots?category=${encodeURIComponent(category)}`, {
+    return authedFetch(`/admin/plots?category=${encodeURIComponent(category)}`, {
       method: "POST", body: JSON.stringify(payload || {}),
     });
   },
   updatePlot(id, patch, category) {
-    return authedFetch(`/admin-plots?category=${encodeURIComponent(category)}&id=${encodeURIComponent(id)}`, {
+    return authedFetch(`/admin/plots/${encodeURIComponent(id)}?category=${encodeURIComponent(category)}`, {
       method: "PUT", body: JSON.stringify(patch || {}),
     });
   },
   deletePlot(id, category) {
-    return authedFetch(`/admin-plots?category=${encodeURIComponent(category)}&id=${encodeURIComponent(id)}`, {
+    return authedFetch(`/admin/plots/${encodeURIComponent(id)}?category=${encodeURIComponent(category)}`, {
       method: "DELETE",
     });
   },
 
   // заявки
   getRequests(limit = 100) {
-    return authedFetch(`/requests?limit=${limit}`, { method: "GET" });
+    return authedFetch(`/admin/requests?limit=${limit}`, { method: "GET" });
   },
   updateRequestStatus(id, status) {
-    return authedFetch(`/requests`, { method: "PATCH", body: JSON.stringify({ id, status }) });
+    return authedFetch(`/admin/requests/${encodeURIComponent(id)}`, { method: "PATCH", body: JSON.stringify({ status }) });
   },
 };
