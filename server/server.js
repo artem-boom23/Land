@@ -200,6 +200,26 @@ app.post("/api/send-form", async (req, res) => {
   const { name = "", phone = "", email = "", message = "", source = "", plotId = "" } = req.body || {};
   if (!name || !phone) return res.status(400).json({ success: false, error: "name и phone обязательны" });
 
+  const lead = {
+    id: randomUUID(),
+    name,
+    phone,
+    email,
+    message,
+    source,
+    plotId,
+    status: "new",
+    createdAt: new Date().toISOString(),
+  };
+
+  // Сохраняем заявку сразу — независимо от Telegram
+  const leads = readJSONSafe(LEADS_PATH, []);
+  leads.unshift(lead);
+  writeJSONSafe(LEADS_PATH, leads);
+
+  res.json({ success: true });
+
+  // Telegram — асинхронно, не блокируем ответ
   const text = `📩 Новая заявка
 ━━━━━━━━━━━━━━━━━━━
 👤 Имя: ${name}
@@ -209,41 +229,22 @@ app.post("/api/send-form", async (req, res) => {
 🧭 Участок: ${plotId}
 🌐 Источник: ${source}`;
 
-  try {
-    await sendToTelegram(text);
-
-    let leads = readJSONSafe(LEADS_PATH, []);
-    const lead = {
-      id: randomUUID(),
-      name,
-      phone,
-      email,
-      message,
-      source,
-      plotId,
-      status: "new",
-      createdAt: new Date().toISOString(),
-    };
-
-    leads.unshift(lead);
-    writeJSONSafe(LEADS_PATH, leads);
-
-    res.json({ success: true });
-  } catch (err) {
-    console.error("❌ Ошибка сохранения заявки:", err);
-    res.status(500).json({ success: false, error: err.message });
-  }
+  sendToTelegram(text).catch(err =>
+    console.error("❌ Telegram недоступен (заявка сохранена):", err.message)
+  );
 });
 
 // ====== Админка: логин + заявки ======
-app.post("/api/admin/login", (req, res) => {
+function handleAdminLogin(req, res) {
   const { email, password } = req.body;
   if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
     const token = signToken({ sub: "admin", email });
     return res.json({ token });
   }
   return res.status(401).json({ error: "Invalid login or password" });
-});
+}
+app.post("/api/admin/login", handleAdminLogin);
+app.post("/api/admin-login", handleAdminLogin);
 
 app.get("/api/admin/requests", authMiddleware, (req, res) => {
   const leads = readJSONSafe(LEADS_PATH, []);
