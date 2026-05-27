@@ -1,7 +1,7 @@
 // src/pages/admin/AdminLogin.jsx
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { adminLogin, clearToken, setToken } from "../../admin/api";
+import { adminLogin, clearToken } from "../../admin/api";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -12,17 +12,14 @@ export default function AdminLogin() {
   const nav = useNavigate();
   const loc = useLocation();
   // если нас перекинул PrivateRoute — тут будет путь, куда хотели попасть
-  const redirectTo = (loc.state && loc.state.from) || "/admin/requests";
+  const redirectTo = loc.state?.from?.pathname || "/admin";
 
   async function onSubmit(e) {
     e.preventDefault();
     setErr("");
     setLoading(true);
     try {
-      const data = await adminLogin(email.trim(), password);
-      // подстрахуемся: положим токен в оба ключа
-      const raw = (data && (data.token || data.accessToken || data.jwt)) || localStorage.getItem("token_raw") || localStorage.getItem("token") || "";
-      if (raw) setToken(raw);
+      await adminLogin(email.trim(), password);
       nav(redirectTo, { replace: true });
     } catch (ex) {
       console.error("Login error:", ex);
