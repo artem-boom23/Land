@@ -327,8 +327,8 @@ export default function PlotsMap({ plots = [] }) {
             justify-content: center;
           }
           .queue-panel button {
-            padding: 5px 12px !important;
-            font-size: 12px !important;
+            padding: 5px 10px !important;
+            font-size: 14px !important;
           }
         }
       `}</style>
