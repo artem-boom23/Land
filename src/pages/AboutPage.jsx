@@ -170,7 +170,7 @@ export default function AboutPage() {
         <motion.img
           src={landRoad}
           alt="Наше видение"
-          className="rounded-2xl shadow-lg object-cover w-full h-56 sm:h-72 md:h-96 mx-auto"
+          className="rounded-2xl shadow-lg object-cover w-full max-w-4xl h-56 sm:h-72 md:h-96 mx-auto"
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8 }}
