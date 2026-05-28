@@ -14,10 +14,7 @@ export default function Layout({ children }) {
   const isHome = pathname === "/";
 
   useLayoutEffect(() => {
-    const html = document.documentElement;
-    html.style.scrollBehavior = "auto";
     window.scrollTo(0, 0);
-    html.style.scrollBehavior = "";
   }, [pathname]);
 
   const mainPad = isHome ? "pt-0" : "pt-16";

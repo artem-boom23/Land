@@ -27,18 +27,20 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
 }
 
 .animate-blob {
   animation: blob 8s infinite;
 }
 
+img { display: block; }
+
 .animation-delay-2000 {
   animation-delay: 2s;
 }
 
 /* Глобальные стили */
-
+html, body, #root { min-height: 100%; }
 
 
