@@ -296,55 +296,61 @@ export default function PlotsMap({ plots = [] }) {
         style={{ width: "100%", height: "600px", borderRadius: "20px", overflow: "hidden" }}
       />
 
-      {/* Панель очередей (перелёт, без фильтрации) */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: "20px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          display: "flex",
-          gap: "10px",
-          background: "rgba(255,255,255,0.9)",
-          padding: "10px",
-          borderRadius: "12px",
-          boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-          zIndex: 5,
-        }}
-      >
+      {/* Панель очередей */}
+      <div style={{
+        position: "absolute",
+        bottom: "16px",
+        left: "50%",
+        transform: "translateX(-50%)",
+        zIndex: 5,
+        display: "flex",
+        flexWrap: "wrap",
+        justifyContent: "center",
+        gap: "6px",
+        maxWidth: "calc(100% - 24px)",
+        background: "rgba(255,255,255,0.92)",
+        backdropFilter: "blur(8px)",
+        padding: "8px 10px",
+        borderRadius: "40px",
+        boxShadow: "0 4px 16px rgba(0,0,0,0.18)",
+      }}>
+        <button
+          onClick={flyToAll}
+          style={{
+            padding: "6px 16px",
+            borderRadius: "20px",
+            border: "none",
+            cursor: "pointer",
+            fontWeight: 600,
+            fontSize: "13px",
+            whiteSpace: "nowrap",
+            transition: "all 0.2s",
+            background: activeQueue === null ? "#166534" : "transparent",
+            color: activeQueue === null ? "#fff" : "#374151",
+          }}
+        >
+          Все
+        </button>
         {queues.map((q) => (
           <button
             key={q}
             onClick={() => flyToQueue(q)}
             style={{
-              padding: "6px 12px",
-              borderRadius: "8px",
+              padding: "6px 16px",
+              borderRadius: "20px",
               border: "none",
               cursor: "pointer",
-              background: activeQueue === q ? "#28a745" : "#6c757d",
-              color: "#fff",
+              fontWeight: 600,
+              fontSize: "13px",
               whiteSpace: "nowrap",
+              transition: "all 0.2s",
+              background: activeQueue === q ? "#166534" : "transparent",
+              color: activeQueue === q ? "#fff" : "#374151",
             }}
-            title={`Показать границы: ${q}`}
           >
             {q}
           </button>
         ))}
-        <button
-          onClick={flyToAll}
-          style={{
-            padding: "6px 12px",
-            borderRadius: "8px",
-            border: "none",
-            cursor: "pointer",
-            background: activeQueue === null ? "#28a745" : "#6c757d",
-            color: "#fff",
-            whiteSpace: "nowrap",
-          }}
-          title="Показать все участки"
-        >
-          Все
-        </button>
       </div>
 
       {selectedPlot && (
