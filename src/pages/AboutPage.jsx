@@ -1,8 +1,11 @@
 import { motion } from "framer-motion";
+import land1 from "../assets/images/land1.jpg";
+import landWow from "../assets/images/land_wow.jpg";
+import landRoad from "../assets/images/land_road.jpg";
 
 export default function AboutPage() {
   return (
-    <div className="text-gray-800 overflow-x-hidden">
+    <div className="text-gray-800">
       {/* Вступление + факты */}
       <section className="py-20 px-4 sm:px-6 bg-white border-b text-center">
         <motion.h1
@@ -53,7 +56,7 @@ export default function AboutPage() {
       <section className="py-20 px-4 sm:px-6 bg-gray-50 border-y">
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10 items-center">
           <motion.img
-            src="/images/land1.jpg"
+            src={land1}
             alt="Миссия компании"
             className="rounded-2xl shadow-lg object-cover w-full h-56 sm:h-72 md:h-96"
             initial={{ opacity: 0, x: -80 }}
@@ -100,7 +103,7 @@ export default function AboutPage() {
             </ul>
           </motion.div>
           <motion.img
-            src="/images/land_wow.PNG"
+            src={landWow}
             alt="История компании"
             className="rounded-2xl shadow-lg object-cover w-full h-56 sm:h-72 md:h-96"
             initial={{ opacity: 0, x: 80 }}
@@ -150,13 +153,13 @@ export default function AboutPage() {
 
       {/* Видение */}
       <motion.section
-        className="py-20 px-4 sm:px-6 bg-white text-center"
+        className="pt-20 pb-0 px-4 sm:px-6 bg-white text-center"
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
         viewport={{ once: true }}
       >
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-green-700 mb-6">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-green-700 mb-0">
           Наше видение
         </h2>
         <p className="text-base sm:text-lg md:text-xl max-w-3xl mx-auto leading-relaxed text-gray-700 mb-10">
@@ -165,7 +168,7 @@ export default function AboutPage() {
           масштабировать проект на другие регионы страны.
         </p>
         <motion.img
-          src="/images/land_road.PNG"
+          src={landRoad}
           alt="Наше видение"
           className="rounded-2xl shadow-lg object-cover w-full h-56 sm:h-72 md:h-96 mx-auto"
           initial={{ opacity: 0, scale: 0.9 }}
