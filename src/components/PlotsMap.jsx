@@ -324,6 +324,7 @@ export default function PlotsMap({ plots = [] }) {
             width: auto;
             transform: none;
             padding: 5px 6px;
+            justify-content: center;
           }
           .queue-panel button {
             padding: 5px 12px !important;
