@@ -67,7 +67,7 @@ export default function Footer() {
           <div className="text-white font-semibold mb-2">Контакты</div>
           <div className="text-sm">
             Тел.: <a href="tel:+7..." className="hover:text-white">+7 ...</a><br />
-            Email: <a href="mailto:info@stolitsa-zemli.ru" className="hover:text-white">info@stolitsa-zemli.ru</a>
+            Email: <a href="mailto:StolitsaZemli@yandex.ru" className="hover:text-white">StolitsaZemli@yandex.ru</a>
           </div>
         </div>
       </div>
