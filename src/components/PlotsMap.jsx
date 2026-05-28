@@ -296,24 +296,39 @@ export default function PlotsMap({ plots = [] }) {
         style={{ width: "100%", height: "600px", borderRadius: "20px", overflow: "hidden" }}
       />
 
+      <style>{`
+        .queue-panel {
+          position: absolute;
+          bottom: 16px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: max-content;
+          max-width: calc(100% - 24px);
+          z-index: 5;
+          display: flex;
+          gap: 6px;
+          overflow-x: auto;
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+          background: rgba(255,255,255,0.92);
+          backdrop-filter: blur(8px);
+          padding: 6px 8px;
+          border-radius: 40px;
+          box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+        }
+        .queue-panel::-webkit-scrollbar { display: none; }
+        @media (max-width: 640px) {
+          .queue-panel {
+            left: 12px;
+            right: 12px;
+            width: auto;
+            transform: none;
+          }
+        }
+      `}</style>
+
       {/* Панель очередей */}
-      <div style={{
-        position: "absolute",
-        bottom: "16px",
-        left: "12px",
-        right: "12px",
-        zIndex: 5,
-        display: "flex",
-        gap: "6px",
-        overflowX: "auto",
-        scrollbarWidth: "none",
-        msOverflowStyle: "none",
-        background: "rgba(255,255,255,0.92)",
-        backdropFilter: "blur(8px)",
-        padding: "6px 8px",
-        borderRadius: "40px",
-        boxShadow: "0 4px 16px rgba(0,0,0,0.18)",
-      }}>
+      <div className="queue-panel">
         <button
           onClick={flyToAll}
           style={{
