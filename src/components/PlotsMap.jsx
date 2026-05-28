@@ -319,10 +319,15 @@ export default function PlotsMap({ plots = [] }) {
         .queue-panel::-webkit-scrollbar { display: none; }
         @media (max-width: 640px) {
           .queue-panel {
-            left: 12px;
-            right: 12px;
+            left: 6px;
+            right: 6px;
             width: auto;
             transform: none;
+            padding: 5px 6px;
+          }
+          .queue-panel button {
+            padding: 5px 12px !important;
+            font-size: 12px !important;
           }
         }
       `}</style>
