@@ -1,37 +1,23 @@
-import nodemailer from "nodemailer";
-
-const RELAY_SECRET = process.env.RELAY_SECRET || "";
-const MAIL_USER    = process.env.MAIL_USER    || "";
-const MAIL_PASS    = process.env.MAIL_PASS    || "";
-const MAIL_TO      = process.env.MAIL_TO      || MAIL_USER;
+const TELEGRAM_TOKEN   = process.env.TELEGRAM_TOKEN   || "";
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || "";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
 
-  if (RELAY_SECRET && req.headers["x-relay-secret"] !== RELAY_SECRET) {
-    return res.status(403).json({ ok: false, error: "Forbidden" });
+  const { text } = req.body || {};
+  if (!text) return res.status(400).json({ ok: false, error: "text required" });
+
+  if (!TELEGRAM_TOKEN || !TELEGRAM_CHAT_ID) {
+    return res.status(500).json({ ok: false, error: "Telegram not configured" });
   }
 
-  const { subject, text } = req.body || {};
-  if (!subject || !text) return res.status(400).json({ ok: false, error: "subject and text required" });
-
-  const mailer = nodemailer.createTransport({
-    host: "smtp.yandex.ru",
-    port: 465,
-    secure: true,
-    auth: { user: MAIL_USER, pass: MAIL_PASS },
+  const resp = await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text, disable_web_page_preview: true }),
   });
 
-  try {
-    await mailer.sendMail({
-      from: `"Столица Земли" <${MAIL_USER}>`,
-      to: MAIL_TO,
-      subject,
-      text,
-    });
-    res.json({ ok: true });
-  } catch (err) {
-    console.error("Email error:", err.message);
-    res.status(500).json({ ok: false, error: err.message });
-  }
+  const data = await resp.json();
+  if (!data.ok) return res.status(500).json({ ok: false, error: data.description });
+  res.json({ ok: true });
 }

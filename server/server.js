@@ -85,15 +85,12 @@ function authMiddleware(req, res, next) {
   }
 }
 
-// ====== Email через Vercel relay ======
-async function sendEmail(subject, text) {
+// ====== Уведомление через Vercel relay → Telegram ======
+async function sendEmail(text) {
   const res = await fetch(RELAY_URL, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...(RELAY_SECRET ? { "x-relay-secret": RELAY_SECRET } : {}),
-    },
-    body: JSON.stringify({ subject, text }),
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text }),
   });
   if (!res.ok) {
     const err = await res.text().catch(() => "");
@@ -190,18 +187,18 @@ app.post("/api/send-form", async (req, res) => {
 
   res.json({ success: true });
 
-  // Email — асинхронно, не блокируем ответ
-  const emailText = `Новая заявка с сайта
+  // Telegram через Vercel relay — асинхронно, не блокируем ответ
+  const tgText = `📩 Новая заявка
+━━━━━━━━━━━━━━━━━━━
+👤 Имя: ${name}
+📱 Телефон: ${phone}
+📧 Email: ${email || "—"}
+📝 Сообщение: ${message || "—"}
+🧭 Участок: ${plotId || "—"}
+🌐 Источник: ${source}`;
 
-Имя: ${name}
-Телефон: ${phone}
-Email: ${email}
-Сообщение: ${message}
-Участок: ${plotId || "—"}
-Источник: ${source}`;
-
-  sendEmail("📩 Новая заявка — Столица Земли", emailText).catch(err =>
-    console.error("❌ Email недоступен (заявка сохранена):", err.message)
+  sendEmail(tgText).catch(err =>
+    console.error("❌ Уведомление не отправлено (заявка сохранена):", err.message)
   );
 });
 
