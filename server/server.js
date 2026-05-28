@@ -8,7 +8,7 @@ import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import morgan from "morgan";
 import { randomUUID } from "crypto";
-import nodemailer from "nodemailer";
+import fetch from "node-fetch";
 
 dotenv.config();
 
@@ -31,16 +31,8 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "1234";
 const JWT_SECRET     = process.env.JWT_SECRET     || "dev_secret";
 const JWT_EXPIRES    = process.env.JWT_EXPIRES    || "7d";
 
-const MAIL_USER = process.env.MAIL_USER || "";
-const MAIL_PASS = process.env.MAIL_PASS || "";
-const MAIL_TO   = process.env.MAIL_TO   || MAIL_USER;
-
-const mailer = nodemailer.createTransport({
-  host: "smtp.yandex.ru",
-  port: 465,
-  secure: true,
-  auth: { user: MAIL_USER, pass: MAIL_PASS },
-});
+const RELAY_URL    = process.env.RELAY_URL    || "https://stolitsa-zemli.ru/api/notify";
+const RELAY_SECRET = process.env.RELAY_SECRET || "";
 
 // ===== Утилиты =====
 function getPlotsPath(category) {
@@ -93,18 +85,20 @@ function authMiddleware(req, res, next) {
   }
 }
 
-// ====== Email ======
+// ====== Email через Vercel relay ======
 async function sendEmail(subject, text) {
-  if (!MAIL_USER || !MAIL_PASS) {
-    console.warn("⚠️ Email не настроен (MAIL_USER/MAIL_PASS не заданы)");
-    return;
-  }
-  await mailer.sendMail({
-    from: `"Столица Земли" <${MAIL_USER}>`,
-    to: MAIL_TO,
-    subject,
-    text,
+  const res = await fetch(RELAY_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(RELAY_SECRET ? { "x-relay-secret": RELAY_SECRET } : {}),
+    },
+    body: JSON.stringify({ subject, text }),
   });
+  if (!res.ok) {
+    const err = await res.text().catch(() => "");
+    throw new Error(`Relay ${res.status}: ${err}`);
+  }
 }
 
 // ====== Публичный API (карта) ======
