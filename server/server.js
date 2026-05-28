@@ -1,21 +1,20 @@
 import express from "express";
 import cors from "cors";
-import fetch from "node-fetch"; // В Node 18+ можно убрать
 import fs from "fs/promises";
-import fssync from "fs"; // sync JSON
+import fssync from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import morgan from "morgan";
 import { randomUUID } from "crypto";
+import nodemailer from "nodemailer";
 
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const STORE_PATH = path.join(__dirname, "chat-store.json");
 const LEADS_PATH = path.join(__dirname, "leads-store.json");
 
 const app = express();
@@ -27,14 +26,21 @@ app.use(morgan("dev"));
 app.use(express.static(path.join(__dirname, "../public")));
 
 // ====== Настройки ======
-const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN || "8444438032:AAGNWu4mTOUqM_Sd12RHdD_CgD64Ypx9XjU";
-const TELEGRAM_CHAT_ID_NEW = process.env.TELEGRAM_CHAT_ID_NEW || "-1003040492375";
-const TELEGRAM_CHAT_ID_OLD = process.env.TELEGRAM_CHAT_ID_OLD || "-4966734338";
-
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@site.local";
+const ADMIN_EMAIL    = process.env.ADMIN_EMAIL    || "admin@site.local";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "1234";
-const JWT_SECRET = process.env.JWT_SECRET || "dev_secret";
-const JWT_EXPIRES = process.env.JWT_EXPIRES || "7d";
+const JWT_SECRET     = process.env.JWT_SECRET     || "dev_secret";
+const JWT_EXPIRES    = process.env.JWT_EXPIRES    || "7d";
+
+const MAIL_USER = process.env.MAIL_USER || "";
+const MAIL_PASS = process.env.MAIL_PASS || "";
+const MAIL_TO   = process.env.MAIL_TO   || MAIL_USER;
+
+const mailer = nodemailer.createTransport({
+  host: "smtp.yandex.ru",
+  port: 465,
+  secure: true,
+  auth: { user: MAIL_USER, pass: MAIL_PASS },
+});
 
 // ===== Утилиты =====
 function getPlotsPath(category) {
@@ -87,47 +93,18 @@ function authMiddleware(req, res, next) {
   }
 }
 
-// ====== Telegram ======
-async function loadStoredChatId(token) {
-  try {
-    const raw = await fs.readFile(STORE_PATH, "utf8");
-    const data = JSON.parse(raw);
-    return data?.tokens?.[token] || null;
-  } catch {
-    return null;
+// ====== Email ======
+async function sendEmail(subject, text) {
+  if (!MAIL_USER || !MAIL_PASS) {
+    console.warn("⚠️ Email не настроен (MAIL_USER/MAIL_PASS не заданы)");
+    return;
   }
-}
-async function saveStoredChatId(token, chatId) {
-  let data = { tokens: {} };
-  try {
-    const raw = await fs.readFile(STORE_PATH, "utf8");
-    data = JSON.parse(raw) || { tokens: {} };
-  } catch {}
-  if (!data.tokens) data.tokens = {};
-  data.tokens[token] = String(chatId);
-  await fs.writeFile(STORE_PATH, JSON.stringify(data, null, 2), "utf8");
-}
-async function sendToTelegram(text) {
-  const stored = await loadStoredChatId(TELEGRAM_TOKEN);
-  const candidates = [...new Set([TELEGRAM_CHAT_ID_NEW, stored, TELEGRAM_CHAT_ID_OLD].filter(Boolean))];
-
-  for (const cid of candidates) {
-    try {
-      const resp = await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chat_id: cid, text, disable_web_page_preview: true }),
-      });
-      const json = await resp.json();
-      if (json.ok) {
-        await saveStoredChatId(TELEGRAM_TOKEN, cid);
-        return json;
-      }
-    } catch (err) {
-      console.error("Telegram send error:", err);
-    }
-  }
-  throw new Error("Все попытки отправки в Telegram не удались");
+  await mailer.sendMail({
+    from: `"Столица Земли" <${MAIL_USER}>`,
+    to: MAIL_TO,
+    subject,
+    text,
+  });
 }
 
 // ====== Публичный API (карта) ======
@@ -219,18 +196,18 @@ app.post("/api/send-form", async (req, res) => {
 
   res.json({ success: true });
 
-  // Telegram — асинхронно, не блокируем ответ
-  const text = `📩 Новая заявка
-━━━━━━━━━━━━━━━━━━━
-👤 Имя: ${name}
-📱 Телефон: ${phone}
-📧 Email: ${email}
-📝 Сообщение: ${message}
-🧭 Участок: ${plotId}
-🌐 Источник: ${source}`;
+  // Email — асинхронно, не блокируем ответ
+  const emailText = `Новая заявка с сайта
 
-  sendToTelegram(text).catch(err =>
-    console.error("❌ Telegram недоступен (заявка сохранена):", err.message)
+Имя: ${name}
+Телефон: ${phone}
+Email: ${email}
+Сообщение: ${message}
+Участок: ${plotId || "—"}
+Источник: ${source}`;
+
+  sendEmail("📩 Новая заявка — Столица Земли", emailText).catch(err =>
+    console.error("❌ Email недоступен (заявка сохранена):", err.message)
   );
 });
 
